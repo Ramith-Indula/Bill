@@ -2,30 +2,38 @@
   <span class="navbar-text">
    {{userName}}
   </span>
+  <a class="nav-item nav-link" id="nav-Launches-tab" routerLink="/settings">Settings</a>
 </nav>
+<!-- Example single danger button -->
 
 <div style="margin: 50px">
+
   <div class="jumbotron jumbotron-fluid">
     <div class="container">
-      <form class="form-inline" (submit)="addItems()">
+      <form #myForm="ngForm" class="form-inline" (submit)="addItems(myForm)">
 
-        <div class="form-group mx-lg-4 mb-4" >
+        <div class="form-group mx-lg-4 mb-4">
           <label for="itemName" class="sr-only">Item Name</label>
-          <input type="text" [(ngModel)]="itemName"  name="Name" class="form-control form-control-lg" id="itemName" placeholder="Item Name">
+          <input type="text" [(ngModel)]="itemName" name="Name" class="form-control form-control-lg" id="itemName"
+                 placeholder="Item Name">
         </div>
 
 
         <div class="form-group mx-lg-4 mb-4">
           <label for="itemQty" class="sr-only">Quantity</label>
-          <input type="text"  [(ngModel)]="QTY" name="QTY" class="form-control form-control-lg" id="itemQty" placeholder="QTY">
+          <input type="text" [(ngModel)]="QTY" name="QTY" class="form-control form-control-lg" id="itemQty"
+                 placeholder="QTY">
         </div>
 
 
         <div class="form-group mx-lg-4 mb-4">
           <label for="unitPrice" class="sr-only">Unit Price</label>
-          <input type="text" [(ngModel)]="unitPrice" name="unitPrice" class="form-control form-control-lg" id="unitPrice" placeholder="Unit Price">
+          <input type="text" [(ngModel)]="unitPrice" name="unitPrice" class="form-control form-control-lg"
+                 id="unitPrice" placeholder="Unit Price">
         </div>
-        <button type="submit" class="btn btn-primary mb-4">Add</button>
+        <button type="submit" class="btn btn-primary  mb-4">Add</button>
+        <button type="button" class="btn btn-primary mx-lg-4 mb-4" (click)="saveBill()" >Continue</button>
+
       </form>
     </div>
   </div>
@@ -39,6 +47,7 @@
       <th scope="col">Item Name</th>
       <th scope="col">Qty</th>
       <th scope="col">Unit Price</th>
+      <th scope="col">Total</th>
       <th scope="col"></th>
 
     </tr>
@@ -46,10 +55,12 @@
     <tbody>
     <tr *ngFor='let item of items; let i = index'>
       <th scope="row">{{ i+1 }}</th>
-      <td >{{item.itemName}}</td>
-      <td >{{item.QTY}}</td>
-      <td >{{item.unitPrice}}</td>
-      <button type="submit" class="btn btn-primary mb-4">Delete</button>
+      <td>{{item.itemName}}</td>
+      <td>{{item.QTY}}</td>
+      <td>{{item.unitPrice}}</td>
+      <td>{{item.QTY * item.unitPrice}}</td>
+
+      <button type="submit" class="btn btn-primary mb-4" (click)="deleteItem(item.itemName)">Delete</button>
     </tr>
     </tbody>
   </table>

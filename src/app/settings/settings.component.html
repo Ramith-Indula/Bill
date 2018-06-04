@@ -1,0 +1,31 @@
+<button type="button" class="btn btn-primary  mb-4" (click)="addRider()">Add</button>
+
+<div class="jumbotron jumbotron-fluid">
+
+  <div class="container">
+    <form #myForm="ngForm" class="form-inline" (submit)="addItems(myForm)">
+
+      <div class="form-group mx-lg-4 mb-4">
+        <label for="itemName" class="sr-only">Item Name</label>
+        <input type="text" [(ngModel)]="area" name="Name" class="form-control form-control-lg" id="itemName"
+               placeholder="Item Name">
+      </div>
+
+
+      <div class="form-group mx-lg-4 mb-4">
+        <label for="itemQty" class="sr-only">Quantity</label>
+        <input type="text" [(ngModel)]="sub" name="QTY" class="form-control form-control-lg" id="itemQty"
+               placeholder="QTY">
+      </div>
+
+
+      <div class="form-group mx-lg-4 mb-4">
+        <label for="unitPrice" class="sr-only">Unit Price</label>
+        <input type="text" [(ngModel)]="price" name="unitPrice" class="form-control form-control-lg"
+               id="unitPrice" placeholder="Unit Price">
+      </div>
+      <button type="submit" class="btn btn-primary  mb-4">Add</button>
+
+    </form>
+  </div>
+</div>

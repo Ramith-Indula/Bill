@@ -1,0 +1,114 @@
+
+<div style="margin: 50px" >
+
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <form #myForm="ngForm" class="form-inline" (submit)="addItems(myForm)"> <!--(submit)="addItems(myForm)" mx-lg-4 mb-4  mx-lg-8 mb-4-->
+
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <div class="form-group" *ngIf="deliveryAgents">
+                <label for="inputState" style="padding-right: 10px">Rider</label>
+                <select id="inputState" class="form-control" name="selectedRider" [(ngModel)]="selectedRider">
+                  <option *ngFor="let d of deliveryAgents" [value]="d.rider_name">{{d.rider_name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col">
+              <div class="form-group">
+                <label for="inputState" style="padding-right: 10px" >State</label>
+                <select id="inputState1" class="form-control" name="selectedArea" [(ngModel)]="selectedArea">
+                  <option *ngFor="let A of Areas" [value]="A.area" >{{A.area}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col">
+              <p class="text-primary" align="center">Rider: {{selectedRider}}</p>
+            </div>
+            <div class="col">
+              <p class="text-primary">Area: {{selectedArea}}</p>
+            </div>
+          </div>
+        </div>
+
+
+          <div class="row" style="padding-top: 40px">
+            <div class="col" >
+              <div class="form-group"><!--mx-lg-4 mb-4-->
+                <label for="clientName" class="sr-only">Item Name</label>
+                <input type="text" [(ngModel)]="clientName" name="clientName" class="form-control form-control-lg"
+                       id="clientName"
+                       placeholder="Client Name">
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group "> <!--mx-lg-4 mb-4-->
+                <label for="clientAddress" class="sr-only">Quantity</label>
+                <input type="text" [(ngModel)]="clientAddress" name="clientAddress" class="form-control form-control-lg"
+                       id="clientAddress"
+                       placeholder="Client Address">
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="form-group "> <!--mx-lg-4 mb-4-->
+                <label for="clientContact" class="sr-only">Unit Price</label>
+                <input type="text" [(ngModel)]="clientContact" name="clientContact" class="form-control form-control-lg"
+                       id="clientContact" placeholder="Client Contact">
+              </div>
+            </div>
+            <div class="col">
+            <button type="submit" class="btn btn-primary  mb-4">Add</button>
+            <button type="button" class="btn btn-primary mx-lg-4 mb-4" (click)="PDF()">Continue</button>
+            </div>
+          </div>
+
+
+      </form>
+    </div>
+  </div>
+
+<div *ngIf="client.length > 0">
+  <hr>
+  <h1> Receipt </h1>
+  <hr>
+  <p><b>Deliver to:</b> {{client[0].Client.clientName}}</p>
+  <p><b>Address:</b> {{client[0].Client.clientAddress}}</p>
+  <p><b>Contact:</b> {{client[0].Client.clientContact}}</p>
+  <br>
+  <p><b>Rider:</b> {{deliveryAgent[0].rider_name}}</p>
+  <p><b>Rider Contact:</b> {{deliveryAgent[0].rider_contact}}</p>
+  <p><b>Delivery Charges:</b> {{'Rs.'+ deliveryArea[0].price}}</p>
+  <p><b>Receipt issued by:</b> {{userName}}</p>
+</div>
+  <br>
+
+  <h3>Items</h3>
+  <div style="padding: 10px">
+    <table class="table table-hover table-light">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Item Name</th>
+        <th scope="col">Qty</th>
+        <th scope="col">Unit Price</th>
+        <th scope="col">Total</th>
+        <th scope="col"></th>
+
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor='let item of addedItems[1]; let i = index'>
+        <th scope="row">{{ i+1 }}</th>
+        <td>{{item.itemName}}</td>
+        <td>{{item.QTY}}</td>
+        <td>{{item.unitPrice}}</td>
+        <td>{{item.QTY * item.unitPrice}}</td>
+
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
