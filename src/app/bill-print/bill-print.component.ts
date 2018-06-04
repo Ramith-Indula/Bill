@@ -6,6 +6,7 @@ import {UserSessionService} from '../user-session.service';
 import * as pdfmake from 'pdfmake/build/pdfmake.js';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 import {forEach} from '@angular/router/src/utils/collection';
+import {skipUntil} from "rxjs/internal/operators";
 
 
 @Component({
@@ -119,23 +120,6 @@ export class BillPrintComponent implements OnInit {
   }
 
 
-  getItemName() {
-    let productName;
-    this.addedItemsList.forEach(function (item) {
-       productName = item;
-     });
-    return productName;
-  }
-
-
-  getQty(): number {
-    let qty = 0;
-    this.addedItems.forEach(function (item) {
-      qty = item.QTY;
-    });
-    return qty;
-  }
-
   getSubTotal(): number {
     let subTotal = 0;
     this.addedItems.forEach(function (item) {
@@ -153,190 +137,188 @@ export class BillPrintComponent implements OnInit {
   PDF() {
 
 
-     pdfmake.vfs = pdfFonts.pdfMake.vfs;
-     const docDefinition = {
-       content: [
-         {
-           alignment: 'center',
-           columns: [
-             {text: 'Metro Monkey \n Delivery ', fontSize: 50}
+    pdfmake.vfs = pdfFonts.pdfMake.vfs;
+    let docDefinition = {
+      content: [
+        {
+          alignment: 'center',
+          columns: [
+            {text: 'Metro Monkey \n Delivery ', fontSize: 50}
 
-           ]
-         },
-         {canvas: [{type: 'line', x1: 0, y1: 5, x2: 595 - 2 * 40, y2: 5, lineWidth: 1}]},
-         {
-           alignment: 'justify',
-           columns: [
-             {
-               alignment: 'center',
-               text: '\n\nBill to - ',
-               fontSize: 20
-             },
-             {
-               text: ['\n\n', this.client[0].Client.clientName, '\n', this.client[0].Client.clientAddress, '\n',
-                 this.client[0].Client.clientContact]
-               , fontSize: 20
-             }
-           ]
-         },
-         {canvas: [{type: 'line', x1: 0, y1: 5, x2: 595 - 2 * 40, y2: 5, lineWidth: 1}]},
-         {
-           text: 'Another text', style: 'anotherStyle',
-           table: {
-             headerRows: 1,
-             widths: [200, 80, 80, 120],
-             body: [
-               [
+          ]
+        },
+        {canvas: [{type: 'line', x1: 0, y1: 5, x2: 595 - 2 * 40, y2: 5, lineWidth: 1}]},
+        {
+          alignment: 'justify',
+          columns: [
+            {
+              alignment: 'center',
+              text: '\n\nBill to - ',
+              fontSize: 20
+            },
+            {
+              text: ['\n\n', this.client[0].Client.clientName, '\n', this.client[0].Client.clientAddress, '\n',
+                this.client[0].Client.clientContact]
+              , fontSize: 20
+            }
+          ]
+        },
+        {canvas: [{type: 'line', x1: 0, y1: 5, x2: 595 - 2 * 40, y2: 5, lineWidth: 1}]},
+        {
+          text: 'Another text',
+          style: 'anotherStyle',
+          table: {
+            headerRows: 1,
+            widths: [200, 80, 80, 120],
+            body: [
+              [
 
-                 {
-                   border: [false, false, false, true],
-                   text: 'Item', style: 'tableHeader',
-                   fontSize: 20
-                 },
-                 {
-                   border: [false, false, false, true],
-                   text: 'Unit Price', style: 'tableHeader',
-                   fontSize: 20
-                 },
-                 {
-                   border: [false, false, false, true],
-                   text: 'Qty', style: 'tableHeader',
-                   fontSize: 20
-                 },
-                 {
-                   border: [false, false, false, true],
-                   text: 'Price', style: 'tableHeader',
-                   fontSize: 20
-                 }
-               ],
-               [
-                 {
-                   border: [false, false, false, false],
-                   text: this.itemName
-                 },
-                 {
-                   border: [false, false, false, false],
-                   text: this.unitPrice
+                {
+                  border: [false, false, false, true],
+                  text: 'Item', style: 'tableHeader',
+                  fontSize: 20
+                },
+                {
+                  border: [false, false, false, true],
+                  text: 'Unit Price', style: 'tableHeader',
+                  fontSize: 20
+                },
+                {
+                  border: [false, false, false, true],
+                  text: 'Qty', style: 'tableHeader',
+                  fontSize: 20
+                },
+                {
+                  border: [false, false, false, true],
+                  text: 'Price', style: 'tableHeader',
+                  fontSize: 20
+                }
+              ]
+            ]
+          },
+          layout: {},
+        },
+        {canvas: [{type: 'line', x1: 0, y1: 5, x2: 595 - 2 * 40, y2: 5, lineWidth: 1}]},
+        '\n\n\n\n\n\n',
+        {
+          alignment: 'right',
+          columns: [{},
+            {
+              style: 'tableExample', table: {
+                widths: ['auto', 'auto', 200],
+                body: [[{text: [], border: [false, false, false, false]}, {
+                  text: [],
+                  border: [false, false, false, false]
+                },
+                  {
+                    text: [['Sub Total:', '1000'],
+                      ['\n\nDelivery Charges:', this.deliveryArea[0].price],
+                      ['\n\nTotal:', this.deliveryArea[0].price + 1000]],
+                    border: [false, false, false, false],
+                    fontSize: 25
+                  }],
 
-                 },
-                 {
-                   border: [false, false, false, false],
-                   text: this.QTY
+                ]
+              }
+            },
+          ],
 
-                 },
-                 {
-                   border: [false, false, false, false],
-                   text: 'this.getSubTotal()'
-                 },
-               ],
-             ],
+        },
+        /*'\n\n\n',
+        {
+          alignment: 'right',
+          columns: [
+            {},
+            {},
+            {
+              style: 'tableExample',
+              table: {
+                widths: ['auto', 'auto', 130],
+                body: [
+                  [
+                    { text: [], border: [false, false, false, false] },
+                    { text: [], border: [false, false, false, false] },
+                    {
+                      text: [
+                        ['Paid:', '000'],
+                        ['\n\nBalance Paid:', '000']
+                      ],
+                      fillColor: '#eeeeee',
+                      border: [false, false, false, false]
+                    }
+                  ],
 
-           },
-           layout: {},
-         },
-         {canvas: [{type: 'line', x1: 0, y1: 5, x2: 595 - 2 * 40, y2: 5, lineWidth: 1}]},
-         '\n\n\n\n\n\n',
-         {
-           alignment: 'right',
-           columns: [
-             {},
-             {},
-             {
-               style: 'tableExample',
-               table: {
-                 widths: ['auto', 'auto', 130],
-                 body: [
-                   [
-                     {text: [], border: [false, false, false, false]},
-                     {text: [], border: [false, false, false, false]},
-                     {
-                       text: [
-                         ['Sub Total:', 'this.getSubTotal()'],
-                         ['\n\nTax:', 'this.getTax()'],
-                         ['\n\nTotal:', 'this.getGrandTotal()']
-                       ],
-                       fillColor: '#eeeeee',
-                       border: [false, false, false, false]
-                     }
-                   ],
-                   /* [
-                         {text:[
-                                 ['Sub Total:', this.getSubTotal()],
-                                 ['\n\nTax:', this.getTax()],
-                                 ['\n\nTotal:', this.getGrandTotal()]
-                             ],
-                             fillColor: '#eeeeee',
-                             border: [false, false, false, false]}
+                ]
+              }
+            },
+          ],
 
-                     ],*/
-
-                 ]
-               }
-             },
-           ],
-
-         },
-         '\n\n\n',
-         {
-           alignment: 'right',
-           columns: [
-             {},
-             {},
-             {
-               style: 'tableExample',
-               table: {
-                 widths: ['auto', 'auto', 130],
-                 body: [
-                   [
-                     {text: [], border: [false, false, false, false]},
-                     {text: [], border: [false, false, false, false]},
-                     {
-                       text: [
-                         ['Paid:', '000'],
-                         ['\n\nBalance Paid:', '000']
-                       ],
-                       fillColor: '#eeeeee',
-                       border: [false, false, false, false]
-                     }
-                   ],
-
-                 ]
-               }
-             },
-           ],
-
-         },
-       ],
-       styles: {
-         header: {
-           fontSize: 18,
-           bold: true
-         },
-         bigger: {
-           fontSize: 15,
-           italics: true
-         }
-       },
-       defaultStyle: {
-         columnGap: 20
-       },
-       anotherStyles: {
-         italics: true,
-         alignment: 'right',
-         margin: [0, 80, 0, 0],
-       },
-       tableHeader: {
-         bold: true,
-         ontSize: 13,
-         color: 'black'
-       },
-       tableExample: {
-         margin: [0, 10, 0, 15]
-       },
-     };
+        },*/
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true
+        },
+        bigger: {
+          fontSize: 15,
+          italics: true
+        }
+      },
+      defaultStyle: {
+        columnGap: 20
+      },
+      anotherStyles: {
+        italics: true,
+        alignment: 'right',
+        margin: [0, 80, 0, 0],
+      },
+      tableHeader: {
+        bold: true,
+        ontSize: 13,
+        color: 'black'
+      },
+      tableExample: {
+        margin: [0, 10, 0, 15]
+      },
+    } as any;
 
 
-     /*pdfmake.createPdf(docDefinition).open();*/
-     pdfmake.createPdf(docDefinition).print();
+    this.addedItems[1].forEach(item => {
+      let row = [
+        {
+          border: [false, false, false, false],
+          text: item.itemName,
+          fontSize: 20
+        },
+        {
+          border: [false, false, false, false],
+          text: item.unitPrice,
+          fontSize: 20
+
+        },
+        {
+          border: [false, false, false, false],
+          text: item.QTY,
+          fontSize: 20
+
+        },
+        {
+          border: [false, false, false, false],
+          text: item.QTY * item.unitPrice,
+          fontSize: 20
+        },
+      ];
+      let subtotal;
+      subtotal = (item.QTY * item.unitPrice) + subtotal;
+      console.log('Sub Total' + subtotal);
+      docDefinition.content[4].table.body.push(row);
+
+
+    });
+
+    /*pdfmake.createPdf(docDefinition).open();*/
+    pdfmake.createPdf(docDefinition).print();
   }
 }
+
