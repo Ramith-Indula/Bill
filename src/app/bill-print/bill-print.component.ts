@@ -6,7 +6,7 @@ import {UserSessionService} from '../user-session.service';
 import * as pdfmake from 'pdfmake/build/pdfmake.js';
 import * as pdfFonts from 'pdfmake/build/vfs_fonts.js';
 import {forEach} from '@angular/router/src/utils/collection';
-import {skipUntil} from "rxjs/internal/operators";
+import {skipUntil} from 'rxjs/internal/operators';
 
 
 @Component({
@@ -32,9 +32,8 @@ export class BillPrintComponent implements OnInit {
   public addedItemsList: any;
   public client = [];
   public userName;
-  public itemName = 'item';
-  public QTY = 'qty';
-  public unitPrice = 'unitPrice';
+  public subtotal = 0;
+
 
   constructor(public user: UserSessionService, public fbdb: AngularFireDatabase, private activatedRoute: ActivatedRoute) {
   }
@@ -201,29 +200,18 @@ export class BillPrintComponent implements OnInit {
         {canvas: [{type: 'line', x1: 0, y1: 5, x2: 595 - 2 * 40, y2: 5, lineWidth: 1}]},
         '\n\n\n\n\n\n',
         {
-          alignment: 'right',
-          columns: [{},
-            {
-              style: 'tableExample', table: {
-                widths: ['auto', 'auto', 200],
-                body: [[{text: [], border: [false, false, false, false]}, {
-                  text: [],
-                  border: [false, false, false, false]
-                },
-                  {
-                    text: [['Sub Total:', '1000'],
-                      ['\n\nDelivery Charges:', this.deliveryArea[0].price],
-                      ['\n\nTotal:', this.deliveryArea[0].price + 1000]],
-                    border: [false, false, false, false],
-                    fontSize: 25
-                  }],
-
-                ]
-              }
-            },
-          ],
-
+          table: {
+            widths: [88, 80, 80, 250],
+            body: [
+              [{text: [], border: [false, false, false, false]},
+                {text: [], border: [false, false, false, false]},
+                {text: [], border: [false, false, false, false]},
+              ]
+            ]
+          },
+          layout: {},
         },
+
         /*'\n\n\n',
         {
           alignment: 'right',
@@ -309,14 +297,23 @@ export class BillPrintComponent implements OnInit {
           fontSize: 20
         },
       ];
-      let subtotal;
-      subtotal = (item.QTY * item.unitPrice) + subtotal;
-      console.log('Sub Total' + subtotal);
+
+
+      this.subtotal += (item.QTY * item.unitPrice);
       docDefinition.content[4].table.body.push(row);
 
 
     });
-
+    let deliveryCharges = Number(this.deliveryArea[0].price);
+    let subTotal = Number(this.subtotal);
+    let grandTotal = subTotal + deliveryCharges;
+    let row2 = {
+      border: [false, false, false, false],
+      text: ['SubTotal: ' + subTotal, '\n\n', 'Delivery Charges: ' + this.deliveryArea[0].price, '\n\n', 'Grand Total: ' + grandTotal ],
+      fontSize: 25
+    };
+    docDefinition.content[7].table.body[0].push(row2);
+    console.log('Sub Total  ' + this.subtotal);
     /*pdfmake.createPdf(docDefinition).open();*/
     pdfmake.createPdf(docDefinition).print();
   }
